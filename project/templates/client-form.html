@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .text {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+
+    </div>
+
+
+    <script>
+        let container = document.getElementById("container")
+        let dict;
+
+        function func(params) {
+            FormCondition = (index) => {
+                questionTag = (index) => {
+                    const question = document.createElement('h4');
+                    question.className = 'question';
+                    question.textContent = params['data'][index]['question']
+                    container.appendChild(question)
+                }
+                if (params['data'][index]['type'] == 'text') {
+                    questionTag(index);
+                    // answer field
+                    const textTag = document.createElement('input');
+                    textTag.type = 'text';
+                    textTag.className = 'text-input';
+                    container.appendChild(textTag)
+
+                }
+                else if (params['data'][index]['type'] == 'textarea') {
+                    questionTag(index);
+                    // answer field
+                    const textareaTag = document.createElement('textarea');
+                    textareaTag.className = 'textaera-input';
+                    container.appendChild(textareaTag)
+                }
+                else if (params['data'][index]['type'] == 'select') {
+                    // 
+                    questionTag(index);
+                    const selectTag = document.createElement('select');
+                    selectTag.className = 'select-input';
+                    container.appendChild(selectTag)
+                    params['data'][index]['options'].forEach(element => {
+                        const optionTag = document.createElement('option');
+                        optionTag.className = 'option-tag';
+                        optionTag.textContent = element;
+                        selectTag.appendChild(optionTag)
+                    });
+                }
+                else if (params['data'][index]['type'] == 'checkbox') {
+                    questionTag(index)
+                
+                    params['data'][index]['options'].forEach(element => {
+                        const checkTag = document.createElement('input');
+                        checkTag.type = 'checkbox';
+                        checkTag.id = 'checkbox-btn';  // Assign a unique ID for each radio button
+                        checkTag.name = 'checkbox-group';  // Group name for radio buttons
+
+                        const optionTag = document.createElement('label');
+                        optionTag.textContent = element;
+                        optionTag.setAttribute('for', 'checkbox-btn');  // Link the label to the radio button via the 'for' attribute
+
+                        // Append the radio button and the label to the container
+                        container.appendChild(checkTag);
+                        container.appendChild(optionTag);
+                    })
+                }
+                else if (params['data'][index]['type'] == 'radio') {
+                    questionTag(index)
+
+                    params['data'][index]['options'].forEach(element => {
+                        const radioTag = document.createElement('input');
+                        radioTag.type = 'radio';
+                        radioTag.id = 'radio-btn';  // Assign a unique ID for each radio button
+                        radioTag.name = 'radio-group';  // Group name for radio buttons
+
+                        const optionTag = document.createElement('label');
+                        optionTag.textContent = element;
+                        optionTag.setAttribute('for', 'radio-btn');  // Link the label to the radio button via the 'for' attribute
+
+                        // Append the radio button and the label to the container
+                        container.appendChild(radioTag);
+                        container.appendChild(optionTag);
+                    })
+                }
+                // console.log(); 
+
+
+
+            }
+            for (let index = 0; index < params['data'].length; index++) {
+                FormCondition(index);
+            }
+            console.log('here');
+
+        }
+
+        let api = fetch("/api/form/{{id}}")
+            .then(response => {
+                return response.json()
+            })
+            .then(data => {
+                func(data);
+                // console.log(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        // console.log(dict);
+
+    </script>
+</body>
+
+</html>
