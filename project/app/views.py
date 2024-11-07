@@ -7,8 +7,12 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import pandas as pd
 from django.forms.models import model_to_dict
+import os
+from dotenv import load_dotenv
 # Create your views here.
 
+def configure():
+    load_dotenv()
 
 def signup(request):
     if request.method == "POST":
@@ -23,9 +27,9 @@ def signup(request):
             login(request, user)
             return redirect("/")
 
-    return render(request, "auth.html")
+    return redirect("/app")
 
-def login(request):
+def loginuser(request):
     if request.method == 'POST':
         email = request.POST.get("email")
         password = request.POST.get("password")
@@ -35,17 +39,28 @@ def login(request):
             return redirect('/')
         else:
             print('Invalid username or password.')
-    return render(request, 'login.html')
+    return redirect("/app")
+
+def auth(request):
+    return render(request,"auth.html")
 
 def home(request):
-    if request.user.is_authenticated:
-        allevents=EventInformation.objects.all()
-        allformdata=FormData.objects.all()
-        print(allevents)
-        return render(request, "home.html",{'event':allevents})
+    # if request.user.is_authenticated:
+    #     allevents=EventInformation.objects.all()
+    #     allformdata=FormData.objects.all()
+    #     print(allevents)
+    #     return render(request, "home.html",{'event':allevents})
 
+    # else:
+    #     return redirect("/auth")
+    return render(request,"home.html")
+
+
+def app(request):
+    if request.user.is_authenticated:
+        return render(request,"app.html")
     else:
-        return redirect("/auth")
+        return redirect('/login')
 
 
 def PreprocessData(formapi, file):
@@ -149,6 +164,8 @@ def Draft(request):
 import openai
 # large dataIntegration code:
 def dataItegration(request):
+
+    configure()
     if request.method == 'POST':
         jsonMsg=json.loads(request.body)
         print(jsonMsg.get("msg"))
